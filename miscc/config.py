@@ -1,3 +1,12 @@
+# -*- encoding: utf-8 -*-
+'''
+@File        :main.py
+@Date        :2021/04/14 16:05
+@Author      :Wentong Liao, Kai Hu
+@Email       :liao@tnt.uni-hannover.de
+@Version     :0.1
+@Description : Implementation of SSA-GAN
+'''
 from __future__ import division
 from __future__ import print_function
 

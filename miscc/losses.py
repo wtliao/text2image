@@ -1,3 +1,12 @@
+# -*- encoding: utf-8 -*-
+'''
+@File        :main.py
+@Date        :2021/04/14 16:05
+@Author      :Wentong Liao, Kai Hu
+@Email       :liao@tnt.uni-hannover.de
+@Version     :0.1
+@Description : Implementation of SSA-GAN
+'''
 import torch
 import torch.nn as nn
 
@@ -160,12 +169,12 @@ def discriminator_loss(netD, real_imgs, fake_imgs, conditions,
 
 
 def DAMSM_loss(image_encoder, fake_imgs, real_labels,
-                   words_embs, sent_emb, match_labels,
-                   cap_lens, class_ids):
+               words_embs, sent_emb, match_labels,
+               cap_lens, class_ids):
     class_ids = torch.LongTensor(class_ids)
     batch_size = real_labels.size(0)
     # Forward
-    
+
     # words_features: batch_size x nef x 17 x 17
     # sent_code: batch_size x nef
     region_features, cnn_code = image_encoder(fake_imgs)

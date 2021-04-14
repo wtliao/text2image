@@ -5,6 +5,9 @@ This repo is not completely.
 
 ## Network Structure
 ![network_structure](./figures/framework.png)
+
+The structure of the spatial-semantic aware convolutional network (SSACN) is shown as below
+
 ![ssacn](./figures/ssacn.png)
 
 ## Requirements
@@ -51,6 +54,8 @@ See `opts.py` for the options.
 
 ## Performance
 You will get the scores close to below after training under xe loss for xxxxx epochs:
+
+![results](./figures/results.png)
 
 ## Qualitative Results
 Some qualitative results on coco and birds dataset from different methods are shown as follows:

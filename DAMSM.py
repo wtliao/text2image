@@ -1,3 +1,12 @@
+# -*- encoding: utf-8 -*-
+'''
+@File        :main.py
+@Date        :2021/04/14 16:05
+@Author      :Wentong Liao, Kai Hu
+@Email       :liao@tnt.uni-hannover.de
+@Version     :0.1
+@Description : Implementation of SSA-GAN
+'''
 import torch
 import torch.nn as nn
 import torch.nn.parallel
@@ -9,6 +18,7 @@ import torch.nn.functional as F
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
 
 from miscc.config import cfg
+
 
 def conv1x1(in_planes, out_planes, bias=False):
     "1x1 convolution with padding"
@@ -114,7 +124,7 @@ class CNN_ENCODER(nn.Module):
 
         #model = models.inception_v3()
         #url = 'https://download.pytorch.org/models/inception_v3_google-1a9a5a14.pth'
-        #model.load_state_dict(model_zoo.load_url(url))
+        # model.load_state_dict(model_zoo.load_url(url))
         model = models.inception_v3(pretrained=True, transform_input=False)
         for param in model.parameters():
             param.requires_grad = False
@@ -154,7 +164,7 @@ class CNN_ENCODER(nn.Module):
     def forward(self, x):
         features = None
         # --> fixed-size input: batch x 3 x 299 x 299
-        x = nn.functional.interpolate(x,size=(299, 299), mode='bilinear', align_corners=False)
+        x = nn.functional.interpolate(x, size=(299, 299), mode='bilinear', align_corners=False)
         # 299 x 299 x 3
         x = self.Conv2d_1a_3x3(x)
         # 149 x 149 x 32
@@ -212,4 +222,3 @@ class CNN_ENCODER(nn.Module):
         if features is not None:
             features = self.emb_features(features)
         return features, cnn_code
-

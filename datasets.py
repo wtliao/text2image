@@ -1,3 +1,12 @@
+# -*- encoding: utf-8 -*-
+'''
+@File        :main.py
+@Date        :2021/04/14 16:05
+@Author      :Wentong Liao, Kai Hu
+@Email       :liao@tnt.uni-hannover.de
+@Version     :0.1
+@Description : Implementation of SSA-GAN
+'''
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -72,10 +81,10 @@ def get_imgs(img_path, imsize, bbox=None,
 
     if transform is not None:
         img = transform(img)
-        
+
     ret = []
     ret.append(normalize(img))
-    #if cfg.GAN.B_DCGAN:
+    # if cfg.GAN.B_DCGAN:
     '''
     for i in range(cfg.TREE.BRANCH_NUM):
         # print(imsize[i])
@@ -296,7 +305,7 @@ class TextDataset(data.Dataset):
         else:
             bbox = None
             #data_dir = self.data_dir
-            if self.split_name=='train':
+            if self.split_name == 'train':
                 data_dir = '/data/scene_understanding/coco2014/train2014'
             else:
                 data_dir = '/data/scene_understanding/coco2014/val2014'
@@ -309,7 +318,6 @@ class TextDataset(data.Dataset):
         new_sent_ix = index * self.embeddings_num + sent_ix
         caps, cap_len = self.get_caption(new_sent_ix)
         return imgs, caps, cap_len, cls_id, key
-
 
     def __len__(self):
         return len(self.filenames)
