@@ -49,7 +49,9 @@ See `opts.py` for the options.
 
 
 ## Evaluation
+please run `IS.py` and `test_lpips.py` (remember to change the image path) to evaluate the `IS` and `diversity` scores, respectively.
 
+For evaluating the `FID` score, please use this repo https://github.com/bioinf-jku/TTUR.
 
 
 ## Performance
