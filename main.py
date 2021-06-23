@@ -83,7 +83,7 @@ def sampling(text_encoder, netG, dataloader, ixtoword, device):
         model_dir = model_dir.replace(str(current_epoch), str(next_epoch))
     '''
 
-    for num_epoch in [600]:
+    for num_epoch in [500, 600]:
         model_dir = model_dir.replace(str(start_epoch), str(num_epoch))
         start_epoch = num_epoch
 
