@@ -82,7 +82,7 @@ def sampling(text_encoder, netG, dataloader, ixtoword, device):
         next_epoch = start_epoch + path_count * 10
         model_dir = model_dir.replace(str(current_epoch), str(next_epoch))
     '''
-
+    # hard debug by setting the index of trained epoch, adjust it as your need
     for num_epoch in [600]:
         model_dir = model_dir.replace(str(start_epoch), str(num_epoch))
         start_epoch = num_epoch
@@ -107,6 +107,7 @@ def sampling(text_encoder, netG, dataloader, ixtoword, device):
 
         idx = 0
         cnt = 0
+        # hard debug by specifyng the number of synthezied images from caption
         for i in range(1):  # (cfg.TEXT.CAPTIONS_PER_IMAGE):
             for step, data in enumerate(dataloader, 0):
                 imags, captions, cap_lens, class_ids, keys = prepare_data(data)
