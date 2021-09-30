@@ -10,17 +10,13 @@ The structure of the spatial-semantic aware convolutional network (SSACN) is sho
 
 ![ssacn](./figures/ssacn.png)
 
-## Requirements
+## Main Requirements
 * python 3.6+
 * pytorch 1.0+
 * numpy
 * matplotlib
 * opencv
 
-Or install full requirements by running:
-```bash
-pip install -r requirements.txt
-```
 
 ## TODO
 - [x] instruction to prepare dataset
