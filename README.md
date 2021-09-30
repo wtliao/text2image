@@ -45,7 +45,7 @@ you can download our trained models from our [onedrive repo](https://1drv.ms/u/s
 ## Start training
 
 
-See `opts.py` for the options.
+Run main.py file. Please adjust args in the file as your need.
 
 
 ## Evaluation
