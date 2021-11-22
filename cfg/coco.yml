@@ -1,7 +1,7 @@
 CONFIG_NAME: 'coco'
 
 DATASET_NAME: 'coco'
-DATA_DIR: '../data/coco'
+DATA_DIR: 'data/coco'
 GPU_ID: 0
 WORKERS: 1
 
@@ -18,7 +18,7 @@ TRAIN:
     NF: 64 # default 64
     BATCH_SIZE: 24
     MAX_EPOCH: 120
-    NET_G: 'tmp/coco/64/models/netG_120.pth'
+    NET_G: '' # when validation, put the path of the trained model here
     WARMUP_EPOCHS: 0
     GSAVE_INTERVAL: 5
     DSAVE_INTERVAL: 10
@@ -27,4 +27,4 @@ TRAIN:
 TEXT:
     EMBEDDING_DIM: 256
     CAPTIONS_PER_IMAGE: 5
-    DAMSM_NAME: '../DAMSMencoders/pretrained/coco/text_encoder100.pth'
+    DAMSM_NAME: 'DAMSMencoders/coco/text_encoder100.pth'

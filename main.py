@@ -83,73 +83,70 @@ def sampling(text_encoder, netG, dataloader, ixtoword, device):
         model_dir = model_dir.replace(str(current_epoch), str(next_epoch))
     '''
     # hard debug by setting the index of trained epoch, adjust it as your need
-    for num_epoch in [600]:
-        model_dir = model_dir.replace(str(start_epoch), str(num_epoch))
-        start_epoch = num_epoch
 
-        split_dir = 'valid'
-        #split_dir = 'test_every'
-        # Build and load the generator
-        netG.load_state_dict(torch.load(model_dir))
-        netG.eval()
+    split_dir = 'valid'
+    #split_dir = 'test_every'
+    # Build and load the generator
+    netG.load_state_dict(torch.load(model_dir))
+    netG.eval()
 
-        batch_size = cfg.TRAIN.BATCH_SIZE
-        #s_tmp = model_dir
-        s_tmp = model_dir[:model_dir.rfind('.pth')]
-        s_tmp_dir = s_tmp
-        fake_img_save_dir = '%s/%s' % (s_tmp, split_dir)
-        mkdir_p(fake_img_save_dir)
+    batch_size = cfg.TRAIN.BATCH_SIZE
+    #s_tmp = model_dir
+    s_tmp = model_dir[:model_dir.rfind('.pth')]
+    s_tmp_dir = s_tmp
+    fake_img_save_dir = '%s/%s' % (s_tmp, split_dir)
+    mkdir_p(fake_img_save_dir)
 
-        real_img_save_dir = '%s/%s' % (s_tmp, 'real')
-        mkdir_p(real_img_save_dir)
-        cap_save_dir = '%s/%s' % (s_tmp, 'caps')
-        mkdir_p(cap_save_dir)
+    real_img_save_dir = '%s/%s' % (s_tmp, 'real')
+    mkdir_p(real_img_save_dir)
+    cap_save_dir = '%s/%s' % (s_tmp, 'caps')
+    mkdir_p(cap_save_dir)
 
-        idx = 0
-        cnt = 0
-        # hard debug by specifyng the number of synthezied images from caption
-        for i in range(1):  # (cfg.TEXT.CAPTIONS_PER_IMAGE):
-            for step, data in enumerate(dataloader, 0):
-                imags, captions, cap_lens, class_ids, keys = prepare_data(data)
-                real_imgs = imags[0].to(device)
-                cnt += batch_size
-                if step % 100 == 0:
-                    print('step: ', step)
-                # if step > 50:
-                #     break
-                hidden = text_encoder.init_hidden(batch_size)
-                # words_embs: batch_size x nef x seq_len
-                # sent_emb: batch_size x nef
-                words_embs, sent_emb = text_encoder(captions, cap_lens, hidden)
-                words_embs, sent_emb = words_embs.detach(), sent_emb.detach()
+    idx = 0
+    cnt = 0
+    # hard debug by specifyng the number of synthezied images from caption
+    for i in range(1):  # (cfg.TEXT.CAPTIONS_PER_IMAGE):
+        for step, data in enumerate(dataloader, 0):
+            imags, captions, cap_lens, class_ids, keys = prepare_data(data)
+            real_imgs = imags[0].to(device)
+            cnt += batch_size
+            if step % 100 == 0:
+                print('step: ', step)
+            # if step > 50:
+            #     break
+            hidden = text_encoder.init_hidden(batch_size)
+            # words_embs: batch_size x nef x seq_len
+            # sent_emb: batch_size x nef
+            words_embs, sent_emb = text_encoder(captions, cap_lens, hidden)
+            words_embs, sent_emb = words_embs.detach(), sent_emb.detach()
 
-                # code for generating captions
-                #cap_imgs = cap2img_new(ixtoword, captions, cap_lens, s_tmp_dir)
+            # code for generating captions
+            #cap_imgs = cap2img_new(ixtoword, captions, cap_lens, s_tmp_dir)
 
-                #######################################################
-                # (2) Generate fake images
-                ######################################################
-                with torch.no_grad():
-                    noise = torch.randn(batch_size, 100)
-                    noise = noise.to(device)
-                    fake_imgs, _ = netG(noise, sent_emb)
-                for j in range(batch_size):
-                    #s_tmp = '%s/single/%s' % (save_dir, keys[j])
-                    s_tmp = '%s/single' % (fake_img_save_dir)
-                    folder = s_tmp[:s_tmp.rfind('/')]
-                    if not os.path.isdir(folder):
-                        print('Make a new folder: ', folder)
-                        mkdir_p(folder)
-                    im = fake_imgs[j].data.cpu().numpy()
-                    # [-1, 1] --> [0, 255]
-                    im = (im + 1.0) * 127.5
-                    im = im.astype(np.uint8)
-                    im = np.transpose(im, (1, 2, 0))
-                    im = Image.fromarray(im)
-                    idx += 1
-                    #fullpath = '%s_%3d.png' % (s_tmp,i)
-                    fullpath = '%s_s%d.png' % (s_tmp, idx)
-                    im.save(fullpath)
+            #######################################################
+            # (2) Generate fake images
+            ######################################################
+            with torch.no_grad():
+                noise = torch.randn(batch_size, 100)
+                noise = noise.to(device)
+                fake_imgs, _ = netG(noise, sent_emb)
+            for j in range(batch_size):
+                #s_tmp = '%s/single/%s' % (save_dir, keys[j])
+                s_tmp = '%s/single' % (fake_img_save_dir)
+                folder = s_tmp[:s_tmp.rfind('/')]
+                if not os.path.isdir(folder):
+                    print('Make a new folder: ', folder)
+                    mkdir_p(folder)
+                im = fake_imgs[j].data.cpu().numpy()
+                # [-1, 1] --> [0, 255]
+                im = (im + 1.0) * 127.5
+                im = im.astype(np.uint8)
+                im = np.transpose(im, (1, 2, 0))
+                im = Image.fromarray(im)
+                idx += 1
+                #fullpath = '%s_%3d.png' % (s_tmp,i)
+                fullpath = '%s_s%d.png' % (s_tmp, idx)
+                im.save(fullpath)
 
 
 def cap2img(ixtoword, caps, cap_lens):
@@ -320,9 +317,6 @@ def train(dataloader, ixtoword, netG, netD, text_encoder, image_encoder,
         if (epoch >= cfg.TRAIN.WARMUP_EPOCHS) and (epoch % cfg.TRAIN.DSAVE_INTERVAL == 0):
             torch.save(netD.state_dict(), '%s/models/netD_%03d.pth' % (base_dir, epoch))
 
-    count = 0
-    return count
-
 
 if __name__ == "__main__":
     args = parse_args()
@@ -424,8 +418,8 @@ if __name__ == "__main__":
     optimizerD = torch.optim.Adam(netD.parameters(), lr=0.0004, betas=(0.0, 0.9))
 
     if cfg.B_VALIDATION:
-        count = sampling(text_encoder, netG, dataloader, ixtoword, device)  # generate images for the whole valid dataset
+        sampling(text_encoder, netG, dataloader, ixtoword, device)  # generate images for the whole valid dataset
         print('state_epoch:  %d' % (state_epoch))
     else:
 
-        count = train(dataloader, ixtoword, netG, netD, text_encoder, image_encoder, optimizerG, optimizerD, state_epoch, batch_size, device)
+        train(dataloader, ixtoword, netG, netD, text_encoder, image_encoder, optimizerG, optimizerD, state_epoch, batch_size, device)

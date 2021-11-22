@@ -1,7 +1,7 @@
 CONFIG_NAME: 'bird_sloss01'
 
 DATASET_NAME: 'birds'
-DATA_DIR: '../data/birds'
+DATA_DIR: 'data/birds'
 GPU_ID: 0
 WORKERS: 1
 
@@ -19,7 +19,7 @@ TRAIN:
     NF: 64 # default 64
     BATCH_SIZE: 24 #24
     MAX_EPOCH: 600
-    NET_G: 'tmp/bird_sloss01/64/models/netG_500.pth'  #'../test'
+    NET_G: '' # when validation, put the path of the trained model here
     WARMUP_EPOCHS: 100
     GSAVE_INTERVAL: 10
     DSAVE_INTERVAL: 10
@@ -28,6 +28,5 @@ TRAIN:
 TEXT:
     EMBEDDING_DIM: 256
     CAPTIONS_PER_IMAGE: 10
-    #DAMSM_NAME: '../DAMSMencoders/bird/inception/text_encoder200.pth'
-    #DAMSM_NAME: '../DAMSMencoders/bird/text_encoder.pth'
-    DAMSM_NAME: '../DAMSMencoders/pretrained/bird/text_encoder200.pth'
+    DAMSM_NAME: 'DAMSMencoders/bird/text_encoder200.pth'
+
