@@ -32,8 +32,8 @@ The structure of the spatial-semantic aware convolutional network (SSACN) is sho
 3. Download [coco](http://cocodataset.org/#download) dataset and extract the images to `data/coco/`
 
 ## Pre-trained DAMSM model
-1. Download the [pre-trained DAMSM for bird](https://drive.google.com/open?id=1GNUKjVeyWYBJ8hEU-yrfYQpDOkxEyP3V) for CUB and save it to `DAMSMencoders/`
-2. Download the [pre-trained DAMSM for coco](https://drive.google.com/open?id=1zIrXCE9F6yfbEJIbNP5-YrEe2pZcPSGJ) for coco and save it to `DAMSMencoders/`
+1. Download the [pre-trained DAMSM](https://drive.google.com/open?id=1GNUKjVeyWYBJ8hEU-yrfYQpDOkxEyP3V) for CUB and save it to `DAMSMencoders/`
+2. Download the [pre-trained DAMSM](https://drive.google.com/open?id=1zIrXCE9F6yfbEJIbNP5-YrEe2pZcPSGJ) for coco and save it to `DAMSMencoders/`
 
 ## Trained model
 you can download our trained models from our [onedrive repo](https://1drv.ms/u/s!At2RxWvE6z1zgvEoglA1flTSnHZqHg?e=TtJNEW)
