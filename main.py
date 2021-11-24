@@ -129,10 +129,11 @@ def sampling(text_encoder, netG, dataloader, ixtoword, device):
             with torch.no_grad():
                 noise = torch.randn(batch_size, 100)
                 noise = noise.to(device)
-                fake_imgs, _ = netG(noise, sent_emb)
+                fake_imgs, stage_masks = netG(noise, sent_emb)
+                stage_mask = stage_masks[-1]
             for j in range(batch_size):
-                #s_tmp = '%s/single/%s' % (save_dir, keys[j])
-                s_tmp = '%s/single' % (fake_img_save_dir)
+                # save generated image
+                s_tmp = '%s/img' % (fake_img_save_dir)
                 folder = s_tmp[:s_tmp.rfind('/')]
                 if not os.path.isdir(folder):
                     print('Make a new folder: ', folder)
@@ -143,10 +144,147 @@ def sampling(text_encoder, netG, dataloader, ixtoword, device):
                 im = im.astype(np.uint8)
                 im = np.transpose(im, (1, 2, 0))
                 im = Image.fromarray(im)
-                idx += 1
+
                 #fullpath = '%s_%3d.png' % (s_tmp,i)
                 fullpath = '%s_s%d.png' % (s_tmp, idx)
                 im.save(fullpath)
+
+                # save the last fusion mask
+                s_tmp = '%s/fm' % fake_img_save_dir
+                im = stage_mask[j].data.cpu().numpy()
+                # [-1, 1] --> [0, 255]
+                im = im * 255.0
+                im = im.astype(np.uint8)
+                im = np.transpose(im, (1, 2, 0))
+                im = np.squeeze(im, axis=2)
+                im = Image.fromarray(im)
+                fullpath = '%s_%d.png' % (s_tmp, idx)
+                im.save(fullpath)
+
+                idx += 1
+
+
+def gen_sample(text_encoder, netG, device, wordtoix):
+    """
+    caption should be in the form of a list, and each element of the list is a description of the image in form of string.
+    For example:
+    caption length should be no longer than 18 words.
+
+    captions = ['A colorful blue bird has wings with dark stripes and small eyes',
+                'A colorful green bird has wings with dark stripes and small eyes',
+                'A colorful white bird has wings with dark stripes and small eyes',
+                'A colorful black bird has wings with dark stripes and small eyes',
+                'A colorful pink bird has wings with dark stripes and small eyes',
+                'A colorful orange bird has wings with dark stripes and small eyes',
+                'A colorful brown bird has wings with dark stripes and small eyes',
+                'A colorful red bird has wings with dark stripes and small eyes',
+                'A colorful yellow bird has wings with dark stripes and small eyes',
+                'A colorful purple bird has wings with dark stripes and small eyes']
+
+    """
+    captions = ['A colorful blue bird has wings with dark stripes and small eyes',
+                'A colorful green bird has wings with dark stripes and small eyes',
+                'A colorful white bird has wings with dark stripes and small eyes',
+                'A colorful black bird has wings with dark stripes and small eyes',
+                'A colorful pink bird has wings with dark stripes and small eyes',
+                'A colorful orange bird has wings with dark stripes and small eyes',
+                'A colorful brown bird has wings with dark stripes and small eyes',
+                'A colorful red bird has wings with dark stripes and small eyes',
+                'A colorful yellow bird has wings with dark stripes and small eyes',
+                'A colorful purple bird has wings with dark stripes and small eyes']
+
+    # captions = ['A herd of black and white cattle standing on a field',
+    #  'A herd of black cattle standing on a field',
+    #  'A herd of white cattle standing on a field',
+    #  'A herd of brown cattle standing on a field',
+    #  'A herd of black and white sheep standing on a field',
+    #  'A herd of black sheep standing on a field',
+    #  'A herd of white sheep standing on a field',
+    #  'A herd of brown sheep standing on a field']
+    #
+    # captions = ['some horses in a field of green grass with a sky in the background',
+    #  'some horses in a field of yellow grass with a sky in the background',
+    #  'some horses in a field of green grass with a sunset in the background',
+    #  'some horses in a field of yellow grass with a sunset in the background']
+
+    # caption to idx
+    # split string to word
+    for c, i in enumerate(captions):
+        captions[c] = i.split()
+
+    caps = torch.zeros((len(captions), 18), dtype=torch.int64)
+
+    for cl, line in enumerate(captions):
+        for cw, word in enumerate(line):
+            caps[cl][cw] = wordtoix[word.lower()]
+    caps = caps.to(device)
+    cap_len = []
+    for i in captions:
+        cap_len.append(len(i))
+
+    caps_lens = torch.tensor(cap_len, dtype=torch.int64).to(device)
+
+    # for validate wordtoidx
+    # for i in caps:
+    #     for k in i:
+    #         k = k.cpu().numpy().item()
+    #         print(ixtoword[k] + ' ', end="", flush=True)
+    #     print()
+
+    model_dir = cfg.TRAIN.NET_G
+    split_dir = 'valid'
+    netG.load_state_dict(torch.load(model_dir))
+    netG.eval()
+
+    batch_size = len(captions)
+    s_tmp = model_dir[:model_dir.rfind('.pth')]
+    fake_img_save_dir = '%s/%s' % (s_tmp, split_dir)
+    mkdir_p(fake_img_save_dir)
+
+    for step in range(50):
+
+        hidden = text_encoder.init_hidden(batch_size)
+        words_embs, sent_emb = text_encoder(caps, caps_lens, hidden)
+        words_embs, sent_emb = words_embs.detach(), sent_emb.detach()
+
+        #######################################################
+        # (2) Generate fake images
+        ######################################################
+        with torch.no_grad():
+            noise = torch.randn(1, 100)
+            noise = noise.repeat(batch_size, 1)
+            noise = noise.to(device)
+            fake_imgs, stage_masks = netG(noise, sent_emb)
+            stage_mask = stage_masks[-1]
+        for j in range(batch_size):
+            # save generated image
+            s_tmp = '%s/img' % fake_img_save_dir
+            folder = s_tmp[:s_tmp.rfind('/')]
+            if not os.path.isdir(folder):
+                print('Make a new folder: ', folder)
+                mkdir_p(folder)
+            im = fake_imgs[j].data.cpu().numpy()
+            # [-1, 1] --> [0, 255]
+            im = (im + 1.0) * 127.5
+            im = im.astype(np.uint8)
+            im = np.transpose(im, (1, 2, 0))
+            im = Image.fromarray(im)
+            # fullpath = '%s_%3d.png' % (s_tmp,i)
+            fullpath = '%s_%d.png' % (s_tmp, step)
+            im.save(fullpath)
+
+            # save fusion mask
+            s_tmp = '%s/fm' % fake_img_save_dir
+            im = stage_mask[j].data.cpu().numpy()
+            # [-1, 1] --> [0, 255]
+            im = im * 255.0
+            im = im.astype(np.uint8)
+
+            im = np.transpose(im, (1, 2, 0))
+            im = np.squeeze(im, axis=2)
+            im = Image.fromarray(im)
+            fullpath = '%s_%d.png' % (s_tmp, step)
+            im.save(fullpath)
 
 
 def cap2img(ixtoword, caps, cap_lens):
@@ -368,6 +506,7 @@ if __name__ == "__main__":
                               base_size=cfg.TREE.BASE_SIZE,
                               transform=image_transform)
         ixtoword = dataset.ixtoword
+        wordtoix = dataset.wordtoix
         print(dataset.n_words, dataset.embeddings_num)
         assert dataset
         dataloader = torch.utils.data.DataLoader(
@@ -418,8 +557,7 @@ if __name__ == "__main__":
     optimizerD = torch.optim.Adam(netD.parameters(), lr=0.0004, betas=(0.0, 0.9))
 
     if cfg.B_VALIDATION:
-        sampling(text_encoder, netG, dataloader, ixtoword, device)  # generate images for the whole valid dataset
-        print('state_epoch:  %d' % (state_epoch))
+        #sampling(text_encoder, netG, dataloader, ixtoword, device)  # generate images for the whole valid dataset
+        gen_sample(text_encoder, netG, device, wordtoix) # generate images with description from user
     else:
-
         train(dataloader, ixtoword, netG, netD, text_encoder, image_encoder, optimizerG, optimizerD, state_epoch, batch_size, device)
