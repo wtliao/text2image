@@ -18,14 +18,6 @@ The structure of the spatial-semantic aware convolutional network (SSACN) is sho
 * opencv
 
 
-## TODO
-- [x] instruction to prepare dataset
-- [ ] remove all unnecessary files
-- [x] add link to download our pre-trained model
-- [ ] clean code including comments
-- [ ] instruction for training
-- [ ] instruction for evaluation
-
 ## Prepare data
 1. Download the preprocessed metadata for [birds](https://drive.google.com/open?id=1O_LtUP9sch09QH3s_EBAgLEctBQ5JBSJ) and [coco](https://drive.google.com/open?id=1rSnbIGNDGZeHlsUlLdahj0RJ9oo6lgH9) and save them to `data/`
 2. Download [birds](http://www.vision.caltech.edu/visipedia/CUB-200-2011.html) dataset and extract the images to `data/birds/`
