@@ -152,7 +152,8 @@ def sampling(text_encoder, netG, dataloader, ixtoword, device):
                 # save the last fusion mask
                 s_tmp = '%s/fm' % fake_img_save_dir
                 im = stage_mask[j].data.cpu().numpy()
-                # [-1, 1] --> [0, 255]
+                # [0, 1] --> [0, 255]
+                im = 1-im # only for better visualization
                 im = im * 255.0
                 im = im.astype(np.uint8)
                 im = np.transpose(im, (1, 2, 0))
@@ -169,18 +170,6 @@ def gen_sample(text_encoder, netG, device, wordtoix):
     caption should be in the form of a list, and each element of the list is a description of the image in form of string.
     For example:
     caption length should be no longer than 18 words.
-
-    captions = ['A colorful blue bird has wings with dark stripes and small eyes',
-                'A colorful green bird has wings with dark stripes and small eyes',
-                'A colorful white bird has wings with dark stripes and small eyes',
-                'A colorful black bird has wings with dark stripes and small eyes',
-                'A colorful pink bird has wings with dark stripes and small eyes',
-                'A colorful orange bird has wings with dark stripes and small eyes',
-                'A colorful brown bird has wings with dark stripes and small eyes',
-                'A colorful red bird has wings with dark stripes and small eyes',
-                'A colorful yellow bird has wings with dark stripes and small eyes',
-                'A colorful purple bird has wings with dark stripes and small eyes']
-
     """
     captions = ['A colorful blue bird has wings with dark stripes and small eyes',
                 'A colorful green bird has wings with dark stripes and small eyes',
@@ -276,7 +265,8 @@ def gen_sample(text_encoder, netG, device, wordtoix):
             # save fusion mask
             s_tmp = '%s/fm' % fake_img_save_dir
             im = stage_mask[j].data.cpu().numpy()
-            # [-1, 1] --> [0, 255]
+            im = 1-im # only for better visualization
+            # [0, 1] --> [0, 255]
             im = im * 255.0
             im = im.astype(np.uint8)
 
