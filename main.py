@@ -235,8 +235,14 @@ def gen_sample(text_encoder, netG, device, wordtoix):
         # (2) Generate fake images
         ######################################################
         with torch.no_grad():
-            noise = torch.randn(1, 100)
-            noise = noise.repeat(batch_size, 1)
+            # noise = torch.randn(1, 100) # using fixed noise
+            # noise = noise.repeat(batch_size, 1)
+            # use different noise
+            noise = []
+            for i in batch_size:
+                noise.append(torch.randn(1, 100))
+            noise = torch.cat(noise,0)
+            
             noise = noise.to(device)
             fake_imgs, stage_masks = netG(noise, sent_emb)
             stage_mask = stage_masks[-1]
