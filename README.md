@@ -1,12 +1,12 @@
 # text2image
-This repository includes the implementation for [Text to Image Generation with Semantic-Spatial Aware GAN](https://arxiv.org/abs/2104.00567)
+This work has been accepted by CVPR 2022!
 
-This repo is not completely.
+This repository includes the implementation for [Text to Image Generation with Semantic-Spatial Aware GAN](https://arxiv.org/abs/2104.00567)
 
 ## Network Structure
 ![network_structure](./figures/framework.png)
 
-The structure of the spatial-semantic aware convolutional network (SSACN) is shown as below
+The structure of the spatial-semantic aware (SSA) block  is shown as below
 
 ![ssacn](./figures/ssacn.png)
 
