@@ -1,5 +1,4 @@
 # text2image
-This work has been accepted by CVPR 2022!
 
 This repository includes the implementation for [Text to Image Generation with Semantic-Spatial Aware GAN](https://arxiv.org/abs/2104.00567)
 
